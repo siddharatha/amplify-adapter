@@ -1,5 +1,11 @@
 # amplify-adapter
 
+## 0.2.2
+
+### Patch Changes
+
+- 67d3709: switch to rolldown
+
 ## 0.2.0
 
 ### Minor Changes
