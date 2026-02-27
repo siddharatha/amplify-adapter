@@ -48,6 +48,15 @@ interface AdapterOptions {
 	 * If true, the dependencies are kept in the output package.json
 	 */
 	keepPackageDependencies?: boolean;
+
+	/**
+	 * Default: 7 * 24 * 60 * 60 * 1000 (7 days in milliseconds)
+	 * Duration in milliseconds to keep previous builds' immutable assets.
+	 * Old hashed JS/CSS files are preserved across builds so that
+	 * stale cached HTML (e.g. on Akamai) can still resolve its references.
+	 * Files older than this value are pruned on each build.
+	 */
+	immutableMaxAge?: number;
 }
 
 export default function plugin(options?: AdapterOptions): Adapter;

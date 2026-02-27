@@ -1,6 +1,33 @@
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+	cpSync,
+	existsSync,
+	readdirSync,
+	readFileSync,
+	rmSync,
+	statSync,
+	writeFileSync,
+} from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { rolldown } from 'rolldown';
+
+/**
+ * Recursively removes files older than maxAgeMs and cleans up empty directories.
+ * @param {string} dir
+ * @param {number} maxAgeMs
+ */
+function pruneOldFiles(dir, maxAgeMs) {
+	const cutoff = Date.now() - maxAgeMs;
+	for (const entry of readdirSync(dir, { withFileTypes: true })) {
+		const fullPath = join(dir, entry.name);
+		if (entry.isDirectory()) {
+			pruneOldFiles(fullPath, maxAgeMs);
+			if (readdirSync(fullPath).length === 0) rmSync(fullPath, { recursive: true });
+		} else if (statSync(fullPath).mtimeMs < cutoff) {
+			rmSync(fullPath);
+		}
+	}
+}
 
 const files = fileURLToPath(new URL('./files', import.meta.url).href);
 /** @type {import('.').default} */
@@ -15,6 +42,7 @@ export default function (opts = {}) {
 		keepPackageDependencies = false,
 		copyNpmrc = true,
 		staticCacheMaxAge = 3600,
+		immutableMaxAge = 7 * 24 * 60 * 60 * 1000, // 7 days
 	} = opts;
 
 	const buildername = 'amplify-adapter';
@@ -29,12 +57,29 @@ export default function (opts = {}) {
 			const tmp = builder.getBuildDirectory(buildername);
 			const computePath = `${out}/compute/default`;
 
+			// Preserve old immutable assets so stale cached HTML can still resolve its JS references
+			const immutablePath = `${out}/static${builder.config.kit.paths.base}/_app/immutable`;
+			const tempImmutable = `${out}.__immutable_backup`;
+			if (existsSync(immutablePath)) {
+				builder.log.minor('Backing up previous immutable assets');
+				cpSync(immutablePath, tempImmutable, { recursive: true, preserveTimestamps: true });
+			}
+
 			builder.rimraf(out);
 			builder.rimraf(tmp);
 			builder.mkdirp(tmp);
 
 			builder.log.minor('Copying assets');
 			builder.writeClient(`${out}/static${builder.config.kit.paths.base}`);
+
+			// Restore previous immutable assets (force: false avoids overwriting current build files)
+			if (existsSync(tempImmutable)) {
+				builder.log.minor('Restoring previous immutable assets');
+				cpSync(tempImmutable, immutablePath, { recursive: true, force: false, preserveTimestamps: true });
+				rmSync(tempImmutable, { recursive: true });
+				pruneOldFiles(immutablePath, immutableMaxAge);
+			}
+
 			builder.writePrerendered(`${computePath}/prerendered${builder.config.kit.paths.base}`);
 
 			if (precompress) {
