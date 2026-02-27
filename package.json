@@ -1,59 +1,18 @@
 {
-	"name": "@siddharatha/amplify-adapter",
-	"version": "1.2.4",
-	"description": "Adapter for SvelteKit v1/v2 + Amplify SSR CI/CD",
-	"license": "MIT",
+	"name": "amplify-adapter-monorepo",
+	"private": true,
 	"type": "module",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/gzimbron/amplify-adapter.git"
-	},
-	"publishConfig": {
-		"access": "public"
-	},
-	"exports": {
-		".": {
-			"types": "./index.d.ts",
-			"import": "./index.js"
-		},
-		"./package.json": "./package.json"
-	},
-	"types": "index.d.ts",
-	"files": [
-		"files",
-		"index.js",
-		"index.d.ts"
-	],
 	"scripts": {
-		"dev": "rimraf files && rolldown -w -c",
-		"build": "rimraf files && rolldown -c",
 		"lint": "prettier --check .",
 		"format": "prettier --write .",
-		"release": "changeset publish",
 		"changeset": "changeset",
+		"release": "changeset publish",
 		"version:next": "changeset version --tag next",
-		"release:next": "pnpm publish --tag next",
-		"test": "vitest run",
-		"test:watch": "vitest"
-	},
-	"dependencies": {
-		"rolldown": "^1.0.0-beta.1"
+		"release:next": "pnpm publish --tag next"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.27.1",
-		"@polka/url": "^1.0.0-next.21",
-		"@sveltejs/kit": "^2.4.0",
-		"@sveltejs/vite-plugin-svelte": "^3.0.1",
-		"@types/node": "^20.0.0",
-		"c8": "^8.0.0",
-		"polka": "^1.0.0-next.22",
-		"rimraf": "^5.0.0",
-		"sirv": "^2.0.3",
-		"typescript": "^4.9.4",
-		"vite": "^5.0.0",
-		"vitest": "^4.0.17"
+		"prettier": "^3.0.0"
 	},
-	"peerDependencies": {
-		"@sveltejs/kit": "^2.4.0"
-	}
+	"packageManager": "pnpm@10.22.0+sha512.bf049efe995b28f527fd2b41ae0474ce29186f7edcb3bf545087bd61fbbebb2bf75362d1307fda09c2d288e1e499787ac12d4fcb617a974718a6051f2eee741c"
 }
