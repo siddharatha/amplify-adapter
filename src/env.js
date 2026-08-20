@@ -1,4 +1,19 @@
 /* global ENV_PREFIX */
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Loads an optional .env file located beside this module so values generated
+// during the Amplify build can be added to the runtime environment.
+// amplify.yaml build/commands :
+// - echo "PUBLIC_LANG=$PUBLIC_LANG" >> ./build/compute/default/.env
+ 
+function loadSiblingEnvFile() {
+	const envFile = join(dirname(fileURLToPath(import.meta.url)), ".env");
+	if (existsSync(envFile)) process.loadEnvFile(envFile);
+}
+
+loadSiblingEnvFile();
 
 const expected = new Set([
 	'SOCKET_PATH',
