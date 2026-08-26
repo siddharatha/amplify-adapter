@@ -15,6 +15,7 @@ export default function (opts = {}) {
 		keepPackageDependencies = false,
 		copyNpmrc = true,
 		staticCacheMaxAge = 3600,
+		sourcemap = false,
 	} = opts;
 
 	const buildername = 'amplify-adapter';
@@ -83,7 +84,7 @@ export default function (opts = {}) {
 			await bundle.write({
 				dir: `${computePath}/server`,
 				format: 'esm',
-				sourcemap: false,
+				sourcemap,
 				sourcemapPathTransform: (relativePath) => {
 					let regex = new RegExp(`((..\/)+.svelte-kit\/${buildername}\/)`, 'g');
 					relativePath = relativePath.replace(regex, './');
