@@ -48,6 +48,12 @@ interface AdapterOptions {
 	 * If true, the dependencies are kept in the output package.json
 	 */
 	keepPackageDependencies?: boolean;
+
+	/**
+	 * Default: false
+	 * If true, sourcemaps are generated for the bundled server output
+	 */
+	sourcemap?: boolean;
 }
 
 export default function plugin(options?: AdapterOptions): Adapter;
